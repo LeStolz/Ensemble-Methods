@@ -21,7 +21,7 @@ if DATADIR not in sys.path:
 def load(name):
     """Dataset of the course ('wdbc', 'pima', 'australian', 'spambase', ...), labels in {-1,+1}.
     The features are NOT standardized: this must be done after the split, on the training set only."""
-    from prepdata import data_recovery
+    from data.prepdata import data_recovery
     cwd = os.getcwd(); os.chdir(DATADIR)
     try:
         X, y = data_recovery(name)

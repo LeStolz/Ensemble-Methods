@@ -21,7 +21,7 @@ from sklearn.model_selection import train_test_split
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-from code.benchkit import real_dataset
+from benchkit import real_dataset
 
 DELTA = 0.05
 GRID = [2 ** k for k in range(15)]                 # values of lambda, fixed in advance for bound A

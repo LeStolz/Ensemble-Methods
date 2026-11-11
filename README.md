@@ -15,8 +15,6 @@ The subject is in `projet.pdf`.
 
 Requirements: Python 3, `numpy`, `scipy`, `scikit-learn`, `matplotlib`.
 
-Keep your scripts and notebooks in `code/` (or add `code/` to `sys.path`), then:
-
 ```bash
 cd code
 python benchkit.py         # quick check of the datasets and of the evaluation helper
@@ -33,3 +31,8 @@ show("wdbc, stumps", run_categorical(X, y, seed=0))
 ```
 
 The features are **not** standardized: standardize after splitting, using the training part only.
+
+
+
+Reproducible results (figure + tables + README how to run).
+15 pages report

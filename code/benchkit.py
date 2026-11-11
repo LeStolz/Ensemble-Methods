@@ -40,7 +40,7 @@ REAL_LARGE = ["spambase", "satimage", "pageblocks", "abalone8", "bankmarketing"]
 
 def real_dataset(name):
     """Dataset of the course (labels in {-1,+1}); features are NOT standardized."""
-    from tptools import load
+    from common.tptools import load
     return load(name)
 
 
