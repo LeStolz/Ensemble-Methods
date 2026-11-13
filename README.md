@@ -35,4 +35,11 @@ The features are **not** standardized: standardize after splitting, using the tr
 
 
 Reproducible results (figure + tables + README how to run).
-15 pages report
+
+Check part 1
+Check part 2
+
+15 pages report:
+For this first part: I expect a brief reminder of the used algorithms and a complete
+description of the followed experimental protocol. The results section will be based on the
+answers of the above questions and additional comments you may thnk relevant.
