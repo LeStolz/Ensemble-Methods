@@ -1,0 +1,13 @@
+,balanced,balanced,balanced,balanced,imbalanced,imbalanced,imbalanced,imbalanced
+,acc,bacc,f1_min,auc,acc,bacc,f1_min,auc
+model,,,,,,,,
+HistGBM,4.4,4.1,4.1,4.4,3.6,2.6,2.7,2.7
+AdaBoost-d3,5.2,4.7,4.5,5.1,4.0,3.3,4.0,3.3
+Bagging,6.0,5.3,5.5,6.2,6.1,5.1,5.6,6.3
+RF,3.2,3.6,3.7,2.9,4.2,5.3,4.7,3.0
+GBM,4.8,4.5,4.5,5.0,5.2,5.4,5.3,5.0
+Stacking,4.4,5.5,5.5,4.4,4.1,6.1,5.1,4.1
+kNN,7.6,7.6,7.6,7.3,6.9,6.4,6.1,8.0
+Tree,9.5,9.1,9.2,9.9,8.9,6.6,7.3,10.0
+AdaBoost-d1,4.8,4.9,4.8,5.1,5.5,6.8,6.9,6.3
+LogReg,5.1,5.6,5.6,4.8,6.4,7.4,7.3,6.3
