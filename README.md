@@ -2,6 +2,16 @@
 
 The subject is in `projet.pdf`.
 
+$>= 0 > class 1$
+explain params.
+baselines
+minority threshold
+split first? pipeline?
+For the effect of metrics on ranking, maybe do something more qualitative like (top-model change rate)? Which model suffer from class imbalance.
+compare gbm as well not just ada, calculate bias and variance if you want.
+stacking training + prediction time and talk about OOF.
+
+
 - **Part 1** (`code/ensembles.ipynb`): our own implementations of bagging (with out-of-bag error), discrete AdaBoost and stacking, compared with random forests, gradient boosting and simple baselines on 18 real datasets.
 - **Part 2** (`code/pac_bayes.ipynb`): PAC-Bayesian bounds (Catoni, McAllester, Seeger) and their minimization, using `code/pacbayes_tools.py`.
 

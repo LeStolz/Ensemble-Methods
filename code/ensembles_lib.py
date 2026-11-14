@@ -9,6 +9,7 @@ import time
 import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator, ClassifierMixin, clone
+from sklearn.pipeline import Pipeline
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
@@ -21,7 +22,7 @@ from sklearn.metrics import (accuracy_score, balanced_accuracy_score,
 from benchkit import flip_labels
 
 __all__ = ["MyBagging", "MyAdaBoost", "MyStacking", "default_base_models",
-           "make_models", "get_scores", "compute_metrics", "evaluate_model",
+           "make_models", "get_scores", "compute_metrics", "evaluate_models",
            "METRICS"]
 
 METRICS = ["acc", "bacc", "f1_min", "auc"]
@@ -179,19 +180,30 @@ def compute_metrics(model, Xte, yte, minority_label):
                 auc=auc)
 
 
-def evaluate_model(model, X, y, n_rep=10, test_size=0.3, seed=0, noise=0.0):
+def evaluate_models(models, X, y, n_rep=10, test_size=0.3, seed=0, noise=0.0):
     """Repeated stratified hold-out; same seed -> same splits for every model.
     Training labels are flipped with rate `noise`; test labels stay clean."""
     sss = StratifiedShuffleSplit(n_splits=n_rep, test_size=test_size,
                                  random_state=seed)
-    out = []
-    for r, (tr, te) in enumerate(sss.split(X, y)):
-        scaler = StandardScaler().fit(X[tr])   # train statistics only
-        Xtr, Xte = scaler.transform(X[tr]), scaler.transform(X[te])
-        ytr = flip_labels(y[tr], noise, seed + r) if noise > 0 else y[tr]
-        minority = 1 if np.mean(y[tr] == 1) < 0.5 else -1
-        t0 = time.perf_counter()
-        mdl = clone(model).fit(Xtr, ytr)
-        t_fit = time.perf_counter() - t0
-        out.append(dict(compute_metrics(mdl, Xte, y[te], minority), t_fit=t_fit))
-    return pd.DataFrame(out)
+    splits = list(sss.split(X, y))
+    results = {}
+
+    for name, model in models.items():
+        out = []
+        for r, (tr, te) in enumerate(splits):
+            ytr = flip_labels(y[tr], noise, seed + r) if noise > 0 else y[tr]
+            minority = 1 if np.mean(y[tr] == 1) < 0.5 else -1
+
+            pipeline = Pipeline([
+                ("scaler", StandardScaler()),
+                ("model", clone(model))
+            ])
+
+            t0 = time.perf_counter()
+            pipeline.fit(X[tr], ytr)
+            t_fit = time.perf_counter() - t0
+
+            out.append(dict(compute_metrics(pipeline, X[te], y[te], minority), t_fit=t_fit))
+        results[name] = pd.DataFrame(out)
+
+    return results
