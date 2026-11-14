@@ -1,0 +1,10 @@
+model,mean_gain,wins,losses
+HistGBM,0.051,17,1
+AdaBoost-d3,0.046,17,1
+RF,0.041,16,2
+GBM,0.038,16,2
+AdaBoost-d1,0.035,14,4
+Bagging,0.034,16,2
+Stacking,0.033,13,4
+kNN,0.008,9,9
+LogReg,-0.001,10,8
