@@ -1,0 +1,11 @@
+model,median fit time (s)
+kNN,0.001
+Tree,0.005
+LogReg,0.01
+Stacking,0.123
+HistGBM,0.185
+AdaBoost-d1,0.22
+GBM,0.263
+AdaBoost-d3,0.35
+RF,0.415
+Bagging,0.506

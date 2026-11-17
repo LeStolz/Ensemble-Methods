@@ -1,0 +1,11 @@
+model,acc - bacc
+LogReg,0.181
+kNN,0.141
+RF,0.138
+Bagging,0.135
+AdaBoost-d1,0.135
+Stacking,0.132
+GBM,0.131
+AdaBoost-d3,0.117
+Tree,0.115
+HistGBM,0.11
