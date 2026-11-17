@@ -138,6 +138,22 @@ def learn_mcallester_categorical(P, L, m, delta=DELTA):
     return dict(Q=Q, emp=emp, KL=KL, bound=bound_mcallester(emp, KL, m, delta), seeger=bound_seeger(emp, KL, m, delta))
 
 
+def learn_dirac_categorical(P, L, m, delta=DELTA):
+    """Posterior with probability 1 on the single best stump (argmin L)."""
+    Q = np.zeros(len(L))
+    Q[np.argmin(L)] = 1.0
+    emp, KL = float(Q @ L), kl_categorical(Q, P)
+    return dict(Q=Q, emp=emp, KL=KL, bound=bound_mcallester(emp, KL, m, delta), seeger=bound_seeger(emp, KL, m, delta))
+
+
+def learn_topk_categorical(P, L, m, k, delta=DELTA):
+    """Posterior with uniform probability 1/k on the k best stumps."""
+    Q = np.zeros(len(L))
+    Q[np.argsort(L)[:k]] = 1.0 / k
+    emp, KL = float(Q @ L), kl_categorical(Q, P)
+    return dict(Q=Q, emp=emp, KL=KL, bound=bound_mcallester(emp, KL, m, delta), seeger=bound_seeger(emp, KL, m, delta))
+
+
 # =================================================================== 3. Gaussian setting
 def add_bias(X):
     return np.hstack([X, np.ones((len(X), 1))])
@@ -211,7 +227,7 @@ def standardize(Xp, *Xs):
     return [(Z - mu) / sd for Z in (Xp,) + Xs]
 
 
-def run_categorical(X, y, seed=0, prior="uniform"):
+def run_categorical(X, y, seed=0, prior="uniform", k_top=None, dirac=False):
     """Both bounds on decision stumps. prior = 'uniform' or 'learned' (Gibbs posterior on the prior part)."""
     Xp, yp, Xs, ys, Xte, yte = split(X, y, seed)
     H = make_stumps(Xp)
@@ -221,12 +237,38 @@ def run_categorical(X, y, seed=0, prior="uniform"):
         P = np.maximum(gibbs_posterior(P, voter_risks(stump_votes(H, Xp), yp), len(yp) / 4), 1e-300)
         P /= P.sum()
     L, m = voter_risks(V, ys), len(ys)
-    A, _ = learn_linear_categorical(P, L, m)
+    best_A, As = learn_linear_categorical(P, L, m)
     B = learn_mcallester_categorical(P, L, m)
+    D = learn_dirac_categorical(P, L, m)
     out = {}
-    for name, r in [("A (linear)", A), ("B (McAllester)", B)]:
-        out[name] = dict(bound=r["bound"], seeger=r["seeger"], KL=r["KL"], emp=r["emp"], neff=1 / np.sum(r["Q"] ** 2),
-                         test_gibbs=gibbs_risk(r["Q"], Vte, yte), test_vote=vote_risk(r["Q"], Vte, yte))
+
+    out["B (McAllester)"] = dict(
+        bound=B["bound"], seeger=B["seeger"], KL=B["KL"], emp=B["emp"], Q=B["Q"],
+        neff=1 / np.sum(B["Q"] ** 2),
+        test_gibbs=gibbs_risk(B["Q"], Vte, yte), test_vote=vote_risk(B["Q"], Vte, yte)
+    )
+    out["A (linear)"] = dict(
+        bound=best_A["bound"], seeger=best_A["seeger"], KL=best_A["KL"], emp=best_A["emp"], Q=best_A["Q"],
+        neff=1 / np.sum(best_A["Q"] ** 2),
+        test_gibbs=gibbs_risk(best_A["Q"], Vte, yte), test_vote=vote_risk(best_A["Q"], Vte, yte),
+        As=[dict(
+            **A, neff=1.0 / np.sum(A["Q"] ** 2),
+            test_gibbs=gibbs_risk(A["Q"], Vte, yte),
+            test_vote=vote_risk(A["Q"], Vte, yte)
+        ) for A in As]
+    )
+    if dirac:
+        out["Dirac"] = dict(
+            bound=D["bound"], seeger=D["seeger"], KL=D["KL"], emp=D["emp"], Q=D["Q"],
+            test_gibbs=gibbs_risk(D["Q"], Vte, yte), test_vote=vote_risk(D["Q"], Vte, yte)
+        )
+    if k_top is not None:
+        TK = learn_topk_categorical(P, L, m, k=k_top)
+        out[f"Top-{k_top}"] = dict(
+            bound=TK["bound"], seeger=TK["seeger"], KL=TK["KL"], emp=TK["emp"], Q=TK["Q"],
+            test_gibbs=gibbs_risk(TK["Q"], Vte, yte), test_vote=vote_risk(TK["Q"], Vte, yte)
+        )
+
     return out
 
 
@@ -237,12 +279,19 @@ def run_gaussian(X, y, seed=0, prior="zero", sigma=1.0):
     w0 = np.zeros(Zs.shape[1])
     if prior == "learned":
         w0 = learn_mcallester_gaussian(Zp, yp, w0, sigma)["w"]
-    A, _ = learn_linear_gaussian(Zs, ys, w0, sigma)
+    best_A, As = learn_linear_gaussian(Zs, ys, w0, sigma)
     B = learn_mcallester_gaussian(Zs, ys, w0, sigma)
     out = {}
-    for name, r in [("A (linear)", A), ("B (McAllester)", B)]:
-        out[name] = dict(bound=r["bound"], seeger=r["seeger"], KL=r["KL"], emp=r["emp"],
-                         test_gibbs=probit_risk(r["w"], Zte, yte, sigma), test_vote=linear_vote_risk(r["w"], Zte, yte))
+
+    out["B (McAllester)"] = dict(
+        bound=B["bound"], seeger=B["seeger"], KL=B["KL"], emp=B["emp"],
+        test_gibbs=probit_risk(B["w"], Zte, yte, sigma), test_vote=linear_vote_risk(B["w"], Zte, yte)
+    )
+
+    out["A (linear)"] = dict(
+        bound=best_A["bound"], seeger=best_A["seeger"], KL=best_A["KL"], emp=best_A["emp"],
+        test_gibbs=probit_risk(best_A["w"], Zte, yte, sigma), test_vote=linear_vote_risk(best_A["w"], Zte, yte), As=As
+    )
     return out
 
 
