@@ -1,15 +1,10 @@
 # Project — Ensemble methods and PAC-Bayesian Learning
 
-The subject is in `projet.pdf`.
-
-$>= 0 > class 1$
 explain params.
 baselines
-minority threshold
-split first? pipeline?
-For the effect of metrics on ranking, maybe do something more qualitative like (top-model change rate)? Which model suffer from class imbalance.
-compare gbm as well not just ada, calculate bias and variance if you want.
 stacking training + prediction time and talk about OOF.
+why and when ensemble methods help.
+15 pages.
 
 
 - **Part 1** (`code/ensembles.ipynb`): our own implementations of bagging (with out-of-bag error), discrete AdaBoost and stacking, compared with random forests, gradient boosting and simple baselines on 18 real datasets.
@@ -19,7 +14,6 @@ stacking training + prediction time and talk about OOF.
 
 | Path | What it is |
 |------|-----------|
-| `projet.pdf` | the subject (Part 1: ensemble methods; Part 2: PAC-Bayesian bounds) |
 | `code/benchkit.py` | the datasets of the course: `real_dataset(name)` returns `X`, `y` with labels in {-1,+1}; `REAL_SMALL` and `REAL_LARGE` list the available names; plus simple simulators and an evaluation helper `evaluate` |
 | `code/ensembles_lib.py` | Part 1: `MyBagging`, `MyAdaBoost`, `MyStacking`, the model catalog `make_models()` and the evaluation protocol `evaluate_model` |
 | `code/ensembles.ipynb` | Part 1: experiments, benchmark and analysis |
@@ -54,8 +48,6 @@ print(X.shape, bk.REAL_SMALL + bk.REAL_LARGE)
 from pacbayes_tools import run_categorical, run_gaussian, show
 show("wdbc, stumps", run_categorical(X, y, seed=0))
 ```
-
-The features are **not** standardized: standardize after splitting, using the training part only (this is what `evaluate_model` does).
 
 ## Reproducing the results
 
