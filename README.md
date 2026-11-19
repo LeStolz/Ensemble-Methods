@@ -1,14 +1,8 @@
 # Project — Ensemble methods and PAC-Bayesian Learning
 
-explain params.
-baselines
-stacking training + prediction time and talk about OOF.
-why and when ensemble methods help.
-15 pages.
+**Part 1** (`code/ensembles.ipynb`): our own implementations of bagging (with out-of-bag error), discrete AdaBoost and stacking, compared with random forests, gradient boosting and simple baselines on 18 real datasets.
 
-
-- **Part 1** (`code/ensembles.ipynb`): our own implementations of bagging (with out-of-bag error), discrete AdaBoost and stacking, compared with random forests, gradient boosting and simple baselines on 18 real datasets.
-- **Part 2** (`code/pac_bayes.ipynb`): PAC-Bayesian bounds (Catoni, McAllester, Seeger) and their minimization, using `code/pacbayes_tools.py`.
+**Part 2** (`code/pac_bayes.ipynb`): PAC-Bayesian bounds (Catoni, McAllester, Seeger) and their minimization, using `code/pacbayes_tools.py`.
 
 ## Contents
 
@@ -81,11 +75,7 @@ The benchmark (section 7) takes about 20 minutes with `N_REP = 10` and is cached
 | Table 7: stacking, gain and cost | 12 | `results/stacking.csv`, `results/fit_times.csv` |
 | Conclusions | 13 | in the notebook |
 
-### Part 2 — `code/pac_bayes.ipynb`
-
-*To be completed by the partner: table "report item / notebook section / output file" for questions 1 to 5.*
-
-## Experimental protocol (Part 1)
+#### Experimental protocol
 
 - **Datasets**: 18 of the 22 datasets of the course (`bankmarketing`, `bupa`, `balance`, `splice` are left out). A dataset is called *imbalanced* when its minority class is below 30%. Multiclass datasets are binarized one-vs-rest in `data/prepdata.py`.
 - **Splits**: 10 repeated stratified hold-out splits (70% train / 30% test), same seed for all models.
@@ -94,6 +84,17 @@ The benchmark (section 7) takes about 20 minutes with `N_REP = 10` and is cached
 - **Models**: single tree, logistic regression, 7-NN (baselines); our bagging, AdaBoost (depth 1 and 3) and stacking; random forest, `GradientBoostingClassifier`, `HistGradientBoostingClassifier`. Hyperparameters are scikit-learn defaults (no tuning).
 - **Label noise**: applied to the training labels only; test labels stay clean.
 
+### Part 2 — `code/pac_bayes.ipynb`
+
+All randomness is seeded (`seed=0`).
+The protocol is defined by the project itself.
+
+The notebook can be run (or reloaded) as is.
+
+Each report item (table, figures,...) can be found in their corresponding section in the notebook (copy cell output).
+
 ## Authors
 
 *[Madjiguène Fall]* (Part 1), *[Vo Nam Dang]* (Part 2); each part was reviewed by the other.
+
+15 pages.
